@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe07bc14586b5b2418a63051c7b68f67, type: 3}
+  m_Name: Mace
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
+  itemName: 
+  description: 
+  slot: 0
+  attackOptions:
+  - attackName: Smash
+    attackRange: 1
+    attackAPCost: 2
+    damageMultiplier: 1
+  abilities:
+  - {fileID: 11400000, guid: c40a16b36ae3b544cbc1bc89141e4405, type: 2}
+  attackName: Attack
+  attackType: 0
+  attackRange: 1
+  attackAPCost: 2
+  damageBonus: 25
+  armorBonus: 0
+  maxHealthBonus: 0
+  bodyArmorType: 0
