@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-
+using UnityEngine.EventSystems;
 public class TownBuildingManager : MonoBehaviour
 {
     private BuildingInteraction selectedBuilding;
@@ -8,6 +8,9 @@ public class TownBuildingManager : MonoBehaviour
     void Update()
     {
         if (Mouse.current == null)
+            return;
+
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             return;
 
         if (Mouse.current.leftButton.wasPressedThisFrame)

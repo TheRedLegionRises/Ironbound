@@ -703,7 +703,7 @@ MonoBehaviour:
   width: 10
   height: 10
   tileSize: 1
-  tilePrefab: {fileID: 265893330070124531, guid: 34fe14b1a4f46dd428d73b3051b026ad, type: 3}
+  tilePrefab: {fileID: 7269296315355883609, guid: fbcbd355f521f594e9927d315a88d4e2, type: 3}
 --- !u!1 &289259628
 GameObject:
   m_ObjectHideFlags: 0
