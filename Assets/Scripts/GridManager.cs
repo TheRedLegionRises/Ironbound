@@ -86,6 +86,33 @@ public class GridManager : MonoBehaviour
     {
         List<Tile> neighbors = new List<Tile>();
 
+        Vector2Int[] directions;
+
+        if (tile.x % 2 == 0)
+        {
+            directions = new Vector2Int[]
+            {
+                new Vector2Int(1, 0),
+                new Vector2Int(1, -1),
+                new Vector2Int(0, -1),
+                new Vector2Int(-1, -1),
+                new Vector2Int(-1, 0),
+                new Vector2Int(0, 1)
+            };
+        }
+        else
+        {
+            directions = new Vector2Int[]
+            {
+                new Vector2Int(1, 1),
+                new Vector2Int(1, 0),
+                new Vector2Int(0, -1),
+                new Vector2Int(-1, 0),
+                new Vector2Int(-1, 1),
+                new Vector2Int(0, 1)
+            };
+        }
+
         foreach (Vector2Int direction in directions)
         {
             int newX = tile.x + direction.x;
@@ -103,9 +130,16 @@ public class GridManager : MonoBehaviour
     // Calculates distance between two hexagonal tiles.
     public int GetHexDistance(Tile a, Tile b)
     {
-        int dx = a.x - b.x;
-        int dy = a.y - b.y;
+        int ax = a.x;
+        int az = a.y - (a.x - (a.x & 1)) / 2;
 
-        return (Mathf.Abs(dx) + Mathf.Abs(dy) + Mathf.Abs(dx + dy)) / 2;
+        int bx = b.x;
+        int bz = b.y - (b.x - (b.x & 1)) / 2;
+
+        int dx = ax - bx;
+        int dz = az - bz;
+        int dy = -dx - dz;
+
+        return (Mathf.Abs(dx) + Mathf.Abs(dy) + Mathf.Abs(dz)) / 2;
     }
 }
