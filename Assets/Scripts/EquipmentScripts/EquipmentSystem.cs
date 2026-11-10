@@ -5,12 +5,10 @@ using System.Collections.Generic;
 public class EquipmentSystem : MonoBehaviour
 {
     [Header("Inventory")]
-    public List<EquipmentItem> inventory =
-        new List<EquipmentItem>();
+    public List<EquipmentItem> inventory = new List<EquipmentItem>();
 
     [Header("Equipped Items")]
-    public List<EquipmentItem> equippedItems =
-        new List<EquipmentItem>();
+    public List<EquipmentItem> equippedItems = new List<EquipmentItem>();
 
     // Return all equipped items
     public List<EquipmentItem> GetEquippedItems()
@@ -20,9 +18,7 @@ public class EquipmentSystem : MonoBehaviour
     //Return specific equipped item
     public EquipmentItem GetEquippedItem(EquipmentSlot slot)
     {
-        return equippedItems.Find(
-            item => item != null && item.slot == slot
-        );
+        return equippedItems.Find(item => item != null && item.slot == slot);
     }
 
     public bool AddToInventory(EquipmentItem item)

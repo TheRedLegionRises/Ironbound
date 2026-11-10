@@ -258,7 +258,7 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("Remaining AP: " + currentAP);
     }
 
-    void UpdateMovementRange()
+    public void UpdateMovementRange()
     {
         // Clear previous highlights.
         for (int x = 0; x < gridManager.width; x++)

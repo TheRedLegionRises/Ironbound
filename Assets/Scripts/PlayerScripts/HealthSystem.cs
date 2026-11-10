@@ -83,18 +83,18 @@ public class HealthSystem : MonoBehaviour
         OnHealthChanged?.Invoke();
     }
 
-    public int GetMovementCost(int baseCost)
-    {
-        return baseCost;
-    }
+    // public int GetMovementCost(int baseCost)
+    // {
+    //     return baseCost;
+    // }
 
-    public int GetAttackDamage(int baseDamage)
-    {
-        return baseDamage;
-    }
+    // public int GetAttackDamage(int baseDamage)
+    // {
+    //     return baseDamage;
+    // }
 
-    public int GetMaximumAP(int baseAP)
-    {
-        return baseAP;
-    }
+    // public int GetMaximumAP(int baseAP)
+    // {
+    //     return baseAP;
+    // }
 }

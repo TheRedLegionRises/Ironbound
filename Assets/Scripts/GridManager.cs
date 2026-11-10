@@ -38,24 +38,13 @@ public class GridManager : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                // Flat-topped hexagonal grid using odd-column offset.
                 float worldX = tileSize * 1.5f * x;
 
-                float worldZ = tileSize * Mathf.Sqrt(3f) *
-                    (y + (x % 2) * 0.5f);
+                float worldZ = tileSize * Mathf.Sqrt(3f) * (y + (x % 2) * 0.5f);
 
-                Vector3 position = transform.position + new Vector3(
-                    worldX,
-                    0f,
-                    worldZ
-                );
+                Vector3 position = transform.position + new Vector3(worldX, 0f, worldZ);
 
-                GameObject tileObject = Instantiate(
-                    tilePrefab,
-                    position,
-                    Quaternion.identity,
-                    transform
-                );
+                GameObject tileObject = Instantiate(tilePrefab, position, Quaternion.identity, transform);
 
                 Tile tile = tileObject.GetComponent<Tile>();
 
@@ -65,16 +54,18 @@ public class GridManager : MonoBehaviour
             }
         }
 
-        MissionObjectiveManager objectiveManager =
-            FindAnyObjectByType<MissionObjectiveManager>();
+        MissionObjectiveManager objectiveManager = FindAnyObjectByType<MissionObjectiveManager>();
 
         if (objectiveManager != null)
-            objectiveManager.InitializeObjective(this);
+        {
+            objectiveManager.InitializeObjective(this); 
+        }
+           
     }
+
     public Tile GetTile(int x, int y)
     {
-        if (x < 0 || x >= width ||
-            y < 0 || y >= height)
+        if (x < 0 || x >= width || y < 0 || y >= height)
         {
             return null;
         }
