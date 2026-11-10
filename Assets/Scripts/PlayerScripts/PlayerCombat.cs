@@ -181,6 +181,7 @@ public class PlayerCombat : MonoBehaviour
         // ApplyWeaponAbilitiesAfterAttack(enemy);
 
         playerMovement.currentAP -= weapon.attackOptions[0].attackAPCost;
+        playerMovement.UpdateMovementRange();
 
         Debug.Log("Used " + weapon.attackOptions[0].attackName + " for " + damage + " damage!");
 

@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
@@ -18,18 +19,19 @@ public class PlayerMovement : MonoBehaviour
     public int maxAP = 5;
     public int currentAP = 5;
 
-     public float moveSpeed = 5f;
+    public float moveSpeed = 5f;
     public float doubleClickTime = 0.3f;
     public float verticalOffset = 0.6f;
 
     public Tile currentTile;
+
     private Tile lastClickedTile;
     private float lastClickTime;
     private Tile hoveredTile;
 
     private bool isMoving = false;
 
-     void Start()
+    void Start()
     {
         currentAP = maxAP;
 
@@ -39,9 +41,7 @@ public class PlayerMovement : MonoBehaviour
         {
             currentTile.isOccupied = true;
 
-            transform.position =
-                currentTile.transform.position +
-                Vector3.up * verticalOffset;
+            transform.position = currentTile.transform.position + Vector3.up * verticalOffset;
         }
 
         UpdateMovementRange();
@@ -57,55 +57,40 @@ public class PlayerMovement : MonoBehaviour
         if (isMoving)
             return;
 
-        if (Mouse.current != null &&
-            Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
             HandleMouseClick();
-        }
     }
 
     void UpdateHoveredTile()
-{
-    if (Camera.main == null)
-        return;
-
-    Ray ray = Camera.main.ScreenPointToRay(
-        Mouse.current.position.ReadValue()
-    );
-
-    Tile newHoveredTile = null;
-
-    if (Physics.Raycast(ray, out RaycastHit hit))
     {
-        newHoveredTile = hit.collider.GetComponent<Tile>();
+        if (Camera.main == null || Mouse.current == null)
+            return;
+
+        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+        Tile newHoveredTile = null;
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+            newHoveredTile = hit.collider.GetComponent<Tile>();
+
+        if (newHoveredTile == hoveredTile)
+            return;
+
+        if (hoveredTile != null)
+            hoveredTile.SetHoverHighlight(false);
+
+        hoveredTile = newHoveredTile;
+
+        if (hoveredTile != null)
+            hoveredTile.SetHoverHighlight(true);
     }
-
-    if (newHoveredTile == hoveredTile)
-        return;
-
-    // Remove previous hover highlight
-    if (hoveredTile != null)
-    {
-        hoveredTile.SetHoverHighlight(false);
-    }
-
-    hoveredTile = newHoveredTile;
-
-    if (hoveredTile != null)
-    {
-        hoveredTile.SetHoverHighlight(true);
-    }
-}
 
     void HandleMouseClick()
     {
         if (Camera.main == null)
             return;
 
-        Ray ray = Camera.main.ScreenPointToRay(
-            Mouse.current.position.ReadValue()
-        );
+        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
         // If attacking, send the click to PlayerCombat instead.
         if (playerCombat != null && playerCombat.IsTargeting)
@@ -124,8 +109,7 @@ public class PlayerMovement : MonoBehaviour
 
         float timeSinceLastClick = Time.time - lastClickTime;
 
-        if (clickedTile == lastClickedTile &&
-            timeSinceLastClick <= doubleClickTime)
+        if (clickedTile == lastClickedTile && timeSinceLastClick <= doubleClickTime)
         {
             MoveToTile(clickedTile);
 
@@ -155,9 +139,7 @@ public class PlayerMovement : MonoBehaviour
         int totalCost = 0;
 
         foreach (Tile tile in path)
-        {
             totalCost += tile.movementCost;
-        }
 
         if (totalCost > currentAP)
         {
@@ -165,7 +147,6 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        // Spend AP only after confirming a valid path
         currentAP -= totalCost;
 
         StartCoroutine(FollowPath(path));
@@ -175,14 +156,9 @@ public class PlayerMovement : MonoBehaviour
     {
         List<Tile> openSet = new List<Tile>();
 
-        Dictionary<Tile, Tile> cameFrom =
-            new Dictionary<Tile, Tile>();
-
-        Dictionary<Tile, int> gScore =
-            new Dictionary<Tile, int>();
-
-        Dictionary<Tile, int> fScore =
-            new Dictionary<Tile, int>();
+        Dictionary<Tile, Tile> cameFrom = new Dictionary<Tile, Tile>();
+        Dictionary<Tile, int> gScore = new Dictionary<Tile, int>();
+        Dictionary<Tile, int> fScore = new Dictionary<Tile, int>();
 
         openSet.Add(start);
 
@@ -193,7 +169,6 @@ public class PlayerMovement : MonoBehaviour
         {
             Tile current = openSet[0];
 
-            // Find tile with lowest estimated total cost
             foreach (Tile tile in openSet)
             {
                 if (fScore[tile] < fScore[current])
@@ -213,22 +188,15 @@ public class PlayerMovement : MonoBehaviour
                 if (neighbor.isOccupied && neighbor != target)
                     continue;
 
-                if (!gScore.ContainsKey(current))
-                    continue;
+                int tentativeGScore = gScore[current] + neighbor.movementCost;
 
-                int tentativeGScore =
-                    gScore[current] + neighbor.movementCost;
-
-                if (!gScore.ContainsKey(neighbor) ||
-                    tentativeGScore < gScore[neighbor])
+                if (!gScore.ContainsKey(neighbor) || tentativeGScore < gScore[neighbor])
                 {
                     cameFrom[neighbor] = current;
 
                     gScore[neighbor] = tentativeGScore;
 
-                    fScore[neighbor] =
-                        tentativeGScore +
-                        GetHeuristic(neighbor, target);
+                    fScore[neighbor] = tentativeGScore + GetHeuristic(neighbor, target);
 
                     if (!openSet.Contains(neighbor))
                         openSet.Add(neighbor);
@@ -241,13 +209,10 @@ public class PlayerMovement : MonoBehaviour
 
     int GetHeuristic(Tile a, Tile b)
     {
-        return Mathf.Abs(a.x - b.x) +
-               Mathf.Abs(a.y - b.y);
+        return gridManager.GetHexDistance(a, b);
     }
 
-    List<Tile> ReconstructPath(
-        Dictionary<Tile, Tile> cameFrom,
-        Tile current)
+    List<Tile> ReconstructPath(Dictionary<Tile, Tile> cameFrom, Tile current)
     {
         List<Tile> path = new List<Tile>();
 
@@ -271,31 +236,19 @@ public class PlayerMovement : MonoBehaviour
             currentTile.isOccupied = false;
             tile.isOccupied = true;
 
-            Vector3 targetPosition =
-                tile.transform.position +
-                Vector3.up * verticalOffset;
+            Vector3 targetPosition = tile.transform.position + Vector3.up * verticalOffset;
 
-            while (Vector3.Distance(
-                transform.position, targetPosition) > 0.01f)
+            while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
             {
-                transform.position = Vector3.MoveTowards(
-                    transform.position,
-                    targetPosition,
-                    moveSpeed * Time.deltaTime
-                );
-
+                transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
                 yield return null;
             }
 
             transform.position = targetPosition;
             currentTile = tile;
 
-            // If reach objective
             if (objectiveManager != null)
-            {
-                // Debug.Log("Checking objective at: " + currentTile.name);
                 objectiveManager.CheckObjective(currentTile);
-            }
         }
 
         isMoving = false;
@@ -305,9 +258,9 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("Remaining AP: " + currentAP);
     }
 
-    void UpdateMovementRange()
+    public void UpdateMovementRange()
     {
-        // Clear previous highlights
+        // Clear previous highlights.
         for (int x = 0; x < gridManager.width; x++)
         {
             for (int y = 0; y < gridManager.height; y++)
@@ -319,11 +272,9 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-
         List<Tile> openSet = new List<Tile>();
 
-        Dictionary<Tile, int> costs =
-            new Dictionary<Tile, int>();
+        Dictionary<Tile, int> costs = new Dictionary<Tile, int>();
 
         openSet.Add(currentTile);
         costs[currentTile] = 0;
@@ -341,14 +292,12 @@ public class PlayerMovement : MonoBehaviour
                 if (neighbor.isOccupied && neighbor != currentTile)
                     continue;
 
-                int newCost =
-                    costs[current] + neighbor.movementCost;
+                int newCost = costs[current] + neighbor.movementCost;
 
                 if (newCost > currentAP)
                     continue;
 
-                if (!costs.ContainsKey(neighbor) ||
-                    newCost < costs[neighbor])
+                if (!costs.ContainsKey(neighbor) || newCost < costs[neighbor])
                 {
                     costs[neighbor] = newCost;
 
@@ -358,7 +307,6 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // Highlight all reachable tiles
         foreach (var entry in costs)
         {
             if (entry.Key != currentTile)

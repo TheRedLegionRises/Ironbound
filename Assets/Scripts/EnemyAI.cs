@@ -252,22 +252,22 @@ public class EnemyAI : MonoBehaviour
         if (currentTile == null || playerTile == null)
             return null;
 
-        Queue<Tile> queue = new Queue<Tile>();
+        List<Tile> openSet = new List<Tile>();
 
-        Dictionary<Tile, Tile> cameFrom =
-            new Dictionary<Tile, Tile>();
+        Dictionary<Tile, Tile> cameFrom = new Dictionary<Tile, Tile>();
+        Dictionary<Tile, int> costs = new Dictionary<Tile, int>();
 
-        queue.Enqueue(currentTile);
-        cameFrom[currentTile] = null;
+        openSet.Add(currentTile);
+        costs[currentTile] = 0;
 
         Tile destination = null;
 
-        while (queue.Count > 0)
+        while (openSet.Count > 0)
         {
-            Tile current = queue.Dequeue();
+            Tile current = openSet[0];
+            openSet.RemoveAt(0);
 
-            if (current != currentTile &&
-                GetDistance(current, playerTile) <= desiredRange)
+            if (current != currentTile && GetDistance(current, playerTile) <= desiredRange)
             {
                 destination = current;
                 break;
@@ -275,20 +275,22 @@ public class EnemyAI : MonoBehaviour
 
             foreach (Tile neighbor in gridManager.GetNeighbors(current))
             {
-                if (neighbor == null)
-                    continue;
-
-                if (cameFrom.ContainsKey(neighbor))
-                    continue;
-
                 if (!neighbor.isWalkable || neighbor.isOccupied)
                     continue;
 
-                if (neighbor.movementCost > currentAP)
+                int newCost = costs[current] + neighbor.movementCost;
+
+                if (newCost > currentAP)
                     continue;
 
-                cameFrom[neighbor] = current;
-                queue.Enqueue(neighbor);
+                if (!costs.ContainsKey(neighbor) || newCost < costs[neighbor])
+                {
+                    costs[neighbor] = newCost;
+                    cameFrom[neighbor] = current;
+
+                    if (!openSet.Contains(neighbor))
+                        openSet.Add(neighbor);
+                }
             }
         }
 
@@ -387,10 +389,8 @@ public class EnemyAI : MonoBehaviour
         if (a == null || b == null)
             return int.MaxValue;
 
-        return Mathf.Abs(a.x - b.x) +
-               Mathf.Abs(a.y - b.y);
+        return gridManager.GetHexDistance(a, b);
     }
-
     public ArmorType GetArmorType()
     {   
         if (equipmentSystem == null)
